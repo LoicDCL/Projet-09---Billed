@@ -25,7 +25,9 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
-      //to-do write expect expression
+      // rajout de l'éléments attendu pour le test Jest (test existant mais pas d'assertion)
+      expect(windowIcon).toBeTruthy()
+      expect(windowIcon.id).toBe("layout-icon1")
 
     })
     test("Then bills should be ordered from earliest to latest", () => {
