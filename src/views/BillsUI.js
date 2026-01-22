@@ -19,7 +19,6 @@ const row = (bill) => {
     `)
   }
 
-
 // Bug Bill 01 : Affiche les tickets dans l'ordre reçus, sans tri hors il faut un tri du plus récent au plus ancien.
 //Ancien code : const rows = (data) => {return (data && data.length) ? data.map(bill => row(bill)).join("") : ""}
 const rows = (data) => {
@@ -28,6 +27,7 @@ const rows = (data) => {
   const sortedData = [...data].sort((a, b) => (a.date < b.date ? 1 : -1))
   return sortedData.map(bill => row(bill)).join("")
 }
+
 export default ({ data: bills, loading, error }) => {
   
   const modal = () => (`

@@ -36,6 +36,8 @@ export default class Login {
       })
 
   }
+
+
 // Bug Login 02 : Correction du testid, remplacement de "employee" par "admin"
   handleSubmitAdmin = e => {
     e.preventDefault()

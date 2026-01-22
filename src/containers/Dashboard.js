@@ -148,12 +148,12 @@ export default class {
     // BUG 04 Dashboard - Multiples appels de handler, mise en place de reset pour corriger.
     bills.forEach(bill => {
       $(`#open-bill${bill.id}`)
-      .off("click")
-      .on("click", (e) => this.handleEditTicket(e, bill, bills))
+        .off("click")
+        .on("click", (e) => {
+          this.handleEditTicket(e, bill, bills)
+        })
     })
-
     return bills
-
   }
 
   getBillsAllUsers = () => {
