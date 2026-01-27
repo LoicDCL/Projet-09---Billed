@@ -8,10 +8,10 @@ const flushPromises = () => new Promise(setImmediate)
 
 describe("Étant donné que je suis connecté en tant qu’employé", () => {
     beforeEach(() => {
-        // GIVEN : la page NewBill est affichée
+        // GIVEN : Page NewBill affichée
         document.body.innerHTML = NewBillUI()
 
-        // GIVEN : un utilisateur employé est présent dans le localStorage
+        // GIVEN : Utilisateur employé présent dans localStorage
         Object.defineProperty(window, "localStorage", {
             value: {
                 getItem: jest.fn(() =>
@@ -23,7 +23,7 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
             writable: true
         })
 
-        // GIVEN : les fonctions globales sont mockées
+        // GIVEN : les fonctions globales sont mockés
         jest.spyOn(console, "log").mockImplementation(() => {})
         jest.spyOn(console, "error").mockImplementation(() => {})
         window.alert = jest.fn()
@@ -33,9 +33,9 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
         jest.restoreAllMocks()
     })
 
-    describe("Gestion de l’upload de fichier", () => {
-        test("Quand le fichier est invalide, alors une alerte est affichée et aucun envoi n’est effectué", async () => {
-            // GIVEN : un container NewBill avec un store mocké
+    describe("Gestion de upload fichier", () => {
+        test("Quand fichier invalide, alerte affichée et aucun envoi effectué", async () => {
+            // GIVEN : Container NewBill avec store mocké
             const onNavigate = jest.fn()
             const store = {
                 bills: () => ({
@@ -52,7 +52,7 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
                 localStorage: window.localStorage
             })
 
-            // GIVEN : un fichier PDF (type non autorisé)
+            // GIVEN : Fichier PDF
             const file = new File(["dummy"], "test.pdf", {
                 type: "application/pdf"
             })
@@ -63,25 +63,25 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
                 writable: false
             })
 
-            // WHEN : l’utilisateur sélectionne le fichier
+            // WHEN : Utilisateur sélectionne fichier
             fireEvent.change(inputFile)
 
-            // THEN : une alerte est affichée
+            // THEN : Alerte affichée
             expect(window.alert).toHaveBeenCalled()
 
-            // THEN : le champ fichier est vidé
+            // THEN : Champ fichier vidé
             expect(inputFile.value).toBe("")
 
-            // THEN : aucun POST n’est effectué
+            // THEN : Aucun POST effectué
             expect(store.bills().create).not.toHaveBeenCalled()
 
-            // THEN : aucune donnée fichier n’est stockée
+            // THEN : Aucune donnée fichier stockée
             expect(newBill.fileUrl).toBeNull()
             expect(newBill.fileName).toBeNull()
         })
 
-        test("Quand le fichier est valide, alors le fichier est envoyé à l’API (POST create)", async () => {
-            // GIVEN : un store mocké avec create()
+        test("Quand le fichier est valide, alors le fichier est envoyé à l’API", async () => {
+            // GIVEN : Store mocké avec create()
             const onNavigate = jest.fn()
             const createMock = jest.fn(() =>
                 Promise.resolve({
@@ -103,7 +103,7 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
                 localStorage: window.localStorage
             })
 
-            // GIVEN : un fichier image valide
+            // GIVEN : Fichier image valide
             const file = new File(["dummy"], "justificatif.png", {
                 type: "image/png"
             })
@@ -114,14 +114,14 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
                 writable: false
             })
 
-            // WHEN : l’utilisateur sélectionne le fichier
+            // WHEN : Utilisateur sélectionne fichier
             fireEvent.change(inputFile)
             await flushPromises()
 
-            // THEN : l’API est appelée (POST create)
+            // THEN : API appelé (POST create)
             expect(createMock).toHaveBeenCalled()
 
-            // THEN : les données du fichier sont stockées
+            // THEN : Données fichier stockées
             expect(newBill.billId).toBe("abc123")
             expect(newBill.fileUrl).toBe("https://localhost/file.png")
             expect(newBill.fileName).toBe("justificatif.png")
@@ -129,9 +129,9 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
     })
 
     describe("Création d’une note de frais — TEST D’INTÉGRATION POST NEW BILL", () => {
-        test("Quand je soumets le formulaire, alors la note de frais est envoyée à l’API et je suis redirigé", async () => {
+        test("Soumission formulaire, alors note de frais envoyé à l’API et redirection", async () => {
 
-            // GIVEN : un store mocké avec create() et update()
+            // GIVEN : Store mocké avec create() et update()
             const onNavigate = jest.fn()
 
             const createMock = jest.fn(() =>
@@ -157,7 +157,7 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
                 localStorage: window.localStorage
             })
 
-            // GIVEN : un fichier valide est uploadé
+            // GIVEN : Fichier valide uploadé
             const file = new File(["dummy"], "receipt.jpg", {
                 type: "image/jpeg"
             })
@@ -171,7 +171,7 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
             fireEvent.change(inputFile)
             await flushPromises()
 
-            // GIVEN : le formulaire est rempli
+            // GIVEN : Formulaire rempli
             fireEvent.change(screen.getByTestId("expense-type"), { target: { value: "Transports" } })
             fireEvent.change(screen.getByTestId("expense-name"), { target: { value: "Taxi" } })
             fireEvent.change(screen.getByTestId("amount"), { target: { value: "42" } })
@@ -180,14 +180,14 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
             fireEvent.change(screen.getByTestId("pct"), { target: { value: "10" } })
             fireEvent.change(screen.getByTestId("commentary"), { target: { value: "note" } })
 
-            // WHEN : le formulaire est soumis
+            // WHEN : Formulaire soumis
             fireEvent.submit(screen.getByTestId("form-new-bill"))
             await flushPromises()
 
-            // THEN : la note de frais est envoyée à l’API (POST update)
+            // THEN : Note de frais est envoyée à l’API (POST update)
             expect(updateMock).toHaveBeenCalled()
 
-            // THEN : les données envoyées sont correctes
+            // THEN : Données envoyées correctes
             const updateArgs = updateMock.mock.calls[0][0]
             const payload = JSON.parse(updateArgs.data)
 
@@ -201,15 +201,121 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
             expect(payload.fileName).toBe("receipt.jpg")
             expect(payload.status).toBe("pending")
 
-            // THEN : l’utilisateur est redirigé vers la page Bills
+            // THEN : Utilisateur redirigé vers la page Bills
             expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["Bills"])
         })
+
+        test("Quand API renvoie erreur 404 lors de l’envoi, alors erreur loggée et pas de redirection", async () => {
+            const onNavigate = jest.fn()
+
+            const createMock = jest.fn(() =>
+                Promise.resolve({
+                    fileUrl: "https://localhost/receipt.jpg",
+                    key: "billKey42"
+            })
+        )
+
+        const updateMock = jest.fn(() => Promise.reject(new Error("Erreur 404")))
+
+        const store = {
+            bills: () => ({
+                create: createMock,
+                update: updateMock
+            })
+        }
+
+        new NewBill({
+            document,
+            onNavigate,
+            store,
+            localStorage: window.localStorage
+        })
+
+        // GIVEN : Upload fichier valide
+        const file = new File(["dummy"], "receipt.jpg", { type: "image/jpeg" })
+        const inputFile = screen.getByTestId("file")
+        Object.defineProperty(inputFile, "files", { value: [file], writable: false })
+        fireEvent.change(inputFile)
+        await flushPromises()
+
+        // GIVEN : Formulaire rempli
+        fireEvent.change(screen.getByTestId("expense-type"), { target: { value: "Transports" } })
+        fireEvent.change(screen.getByTestId("expense-name"), { target: { value: "Taxi" } })
+        fireEvent.change(screen.getByTestId("amount"), { target: { value: "42" } })
+        fireEvent.change(screen.getByTestId("datepicker"), { target: { value: "2023-12-01" } })
+        fireEvent.change(screen.getByTestId("vat"), { target: { value: "20" } })
+        fireEvent.change(screen.getByTestId("pct"), { target: { value: "10" } })
+        fireEvent.change(screen.getByTestId("commentary"), { target: { value: "note" } })
+
+        // WHEN
+        fireEvent.submit(screen.getByTestId("form-new-bill"))
+        await flushPromises()
+
+        // THEN
+        expect(updateMock).toHaveBeenCalled()
+        expect(console.error).toHaveBeenCalled()
+        expect(onNavigate).not.toHaveBeenCalledWith(ROUTES_PATH["Bills"])
+    })
+
+    test("Quand l’API renvoie une erreur 500 lors de l’envoi, alors l’erreur est loggée et je ne suis pas redirigé", async () => {
+        // GIVEN
+        const onNavigate = jest.fn()
+
+        const createMock = jest.fn(() =>
+            Promise.resolve({
+                fileUrl: "https://localhost/receipt.jpg",
+                key: "billKey42"
+            })
+        )
+
+        const updateMock = jest.fn(() => Promise.reject(new Error("Erreur 500")))
+
+        const store = {
+            bills: () => ({
+                create: createMock,
+                update: updateMock
+            })
+        }
+
+        new NewBill({
+            document,
+            onNavigate,
+            store,
+            localStorage: window.localStorage
+        })
+
+        // GIVEN : upload fichier valide
+        const file = new File(["dummy"], "receipt.jpg", { type: "image/jpeg" })
+        const inputFile = screen.getByTestId("file")
+        Object.defineProperty(inputFile, "files", { value: [file], writable: false })
+        fireEvent.change(inputFile)
+        await flushPromises()
+
+        // GIVEN : formulaire rempli
+        fireEvent.change(screen.getByTestId("expense-type"), { target: { value: "Transports" } })
+        fireEvent.change(screen.getByTestId("expense-name"), { target: { value: "Taxi" } })
+        fireEvent.change(screen.getByTestId("amount"), { target: { value: "42" } })
+        fireEvent.change(screen.getByTestId("datepicker"), { target: { value: "2023-12-01" } })
+        fireEvent.change(screen.getByTestId("vat"), { target: { value: "20" } })
+        fireEvent.change(screen.getByTestId("pct"), { target: { value: "10" } })
+        fireEvent.change(screen.getByTestId("commentary"), { target: { value: "note" } })
+
+        // WHEN
+        fireEvent.submit(screen.getByTestId("form-new-bill"))
+        await flushPromises()
+
+        // THEN
+        expect(updateMock).toHaveBeenCalled()
+        expect(console.error).toHaveBeenCalled()
+        expect(onNavigate).not.toHaveBeenCalledWith(ROUTES_PATH["Bills"])
+    })
+
     })
 
     describe("Cas particulier : absence de store", () => {
 
         test("Quand le store est null, alors la navigation vers Bills fonctionne quand même", async () => {
-            // GIVEN : un container NewBill sans store
+            // GIVEN : Container NewBill sans store
             const onNavigate = jest.fn()
 
             new NewBill({
@@ -219,7 +325,7 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
                 localStorage: window.localStorage
             })
 
-            // GIVEN : le formulaire est rempli
+            // GIVEN : Formulaire rempli
             fireEvent.change(screen.getByTestId("expense-type"), { target: { value: "Transports" } })
             fireEvent.change(screen.getByTestId("expense-name"), { target: { value: "Taxi" } })
             fireEvent.change(screen.getByTestId("amount"), { target: { value: "42" } })
@@ -228,10 +334,10 @@ describe("Étant donné que je suis connecté en tant qu’employé", () => {
             fireEvent.change(screen.getByTestId("pct"), { target: { value: "10" } })
             fireEvent.change(screen.getByTestId("commentary"), { target: { value: "note" } })
 
-            // WHEN : le formulaire est soumis
+            // WHEN : Formulaire soumis
             fireEvent.submit(screen.getByTestId("form-new-bill"))
 
-            // THEN : la navigation vers Bills est effectuée
+            // THEN : Navigation vers Bills effectuée
             expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["Bills"])
         })
     })
